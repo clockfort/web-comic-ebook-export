@@ -11,10 +11,9 @@ main = do
 	let urls = filter (isInfixOf "http") $ splitOn " " list
 	let fileSegments = concatMap (filter (isInfixOf ".jpg") . splitOn "/") urls
 	let filenames = map ((concat . take 2) . split (onSublist ".jpg")) fileSegments
-	sequence_ [ renameFile filename (show (fromJust $ elemIndex filename filenames)++".jpg") | filename <- filenames ]
+	sequence_ [ renameFile filename ( zeroPrefix filename filenames++".jpg" ) | filename <- filenames ]
 	putStrLn "Done."
 
-lengthMax list = (length . show . last) list
-deltaDigit list = map ( (lengthMax list-) . length . show ) list
-
-
+lengthMax = length . show . length
+indexOf filename filenames = show (fromJust $ elemIndex filename filenames)
+zeroPrefix filename filenames = replicate ( lengthMax filenames + 2 - ( length . show ) (indexOf filename filenames) ) '0' ++ indexOf filename filenames
