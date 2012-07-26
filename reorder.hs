@@ -1,4 +1,6 @@
+import Codec.Archive.Zip
 import Control.Monad
+import qualified Data.ByteString.Lazy as B
 import Data.List
 import Data.List.Split
 import Data.Maybe
@@ -12,6 +14,8 @@ main = do
 	let fileSegments = concatMap (filter (isInfixOf ".jpg") . splitOn "/") urls
 	let filenames = map ((concat . take 2) . split (onSublist ".jpg")) fileSegments
 	sequence_ [ renameFile filename ( zeroPrefix filename filenames++".jpg" ) | filename <- filenames ]
+	archive <- addFilesToArchive [OptRecursive] emptyArchive [ zeroPrefix filename filenames++".jpg" | filename <- filenames]
+	B.writeFile "comicExport.cbz" $ fromArchive archive
 	putStrLn "Done."
 
 lengthMax = length . show . length
